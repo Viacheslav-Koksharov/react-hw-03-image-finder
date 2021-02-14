@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import fetchImg from '../../services/fetch';
-// import { toast } from 'react-toastify';
-// import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import { toast } from 'react-toastify';
+
 import Spinner from '../Loader/Loader';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Modal from '../Modal/Modal';
@@ -32,7 +32,7 @@ export default class ImageGallery extends Component {
             status: 'resolved',
           }));
         })
-        .catch(error => alert(error.message));
+        .catch(error => toast.error('nononon'));
     }
   }
 
@@ -59,11 +59,24 @@ export default class ImageGallery extends Component {
     });
   };
 
-  toggleModal = e => {
-    this.setState(({ showModal, largeImageURL, tags }) => ({
+  selectedImage = e => {
+    if (e.target.nodeName === 'IMG') {
+      const selectedImage = this.state.images.find(
+        image => image.id === Number(e.target.id),
+      );
+      this.setState(({ showModal }) => ({
+        showModal: !showModal,
+        largeImageURL: selectedImage.largeImageURL,
+        tags: selectedImage.tags,
+      }));
+    }
+  };
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
       showModal: !showModal,
-      // largeImageURL: e.currentTarget.largeImageURL,
-      // tags: e.currentTarget.tags,
+      largeImageURL: null,
+      tags: null,
     }));
   };
 
@@ -76,14 +89,15 @@ export default class ImageGallery extends Component {
       error,
       status,
     } = this.state;
+
     if (status === 'idle') return null;
     if (status === 'pending') return <Spinner />;
     if (status === 'rejected')
       return <p>Whoops, something went wrong: {error.message}</p>;
-    if (status === 'resolved')
+    if (status === 'resolved' && this.state.images.length > 0) {
       return (
         <>
-          <ul className="ImageGallery">
+          <ul className="ImageGallery" onClick={this.selectedImage}>
             {images.map(({ id, webformatURL, tags }) => (
               <ImageGalleryItem
                 key={id}
@@ -101,5 +115,8 @@ export default class ImageGallery extends Component {
           )}
         </>
       );
+    } else {
+      return alert(error.message);
+    }
   }
 }
