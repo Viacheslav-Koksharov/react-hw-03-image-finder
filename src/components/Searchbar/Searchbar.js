@@ -14,7 +14,6 @@ export default class Searchbar extends Component {
   handleSubmit = e => {
     e.preventDefault();
     if (this.state.searchQuery.trim() === '') {
-      this.setState({ images: [] });
       toast.error('Try again!');
       return;
     }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import fetchImg from '../../services/fetch';
-import { toast } from 'react-toastify';
-
+// import { toast } from 'react-toastify';
+import Example from '../Notify/Notify';
 import Spinner from '../Loader/Loader';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Modal from '../Modal/Modal';
@@ -9,7 +9,7 @@ import Button from '../Button/Button';
 
 export default class ImageGallery extends Component {
   state = {
-    page: 1,
+    page: this.props.page,
     images: [],
     error: null,
     status: 'idle',
@@ -19,20 +19,19 @@ export default class ImageGallery extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.searchQuery !== this.props.searchQuery) {
+    const { searchQuery, page } = this.props;
+    if (prevProps.searchQuery !== searchQuery) {
       this.setState({ status: 'pending' });
-      const { page } = this.state;
-      const { searchQuery } = this.props;
 
       fetchImg(searchQuery, page)
         .then(images => {
           this.setState(prevState => ({
             images: [...images],
-            page: this.state.page + 1,
+            page: page + 1,
             status: 'resolved',
           }));
         })
-        .catch(error => toast.error('nononon'));
+        .catch(error => this.setState({ error, status: 'rejected' }));
     }
   }
 
@@ -44,12 +43,12 @@ export default class ImageGallery extends Component {
       .then(images => {
         this.setState(prevState => ({
           images: [...prevState.images, ...images],
-          page: this.state.page + 1,
+          page: page + 1,
           status: 'resolved',
         }));
         this.scrollTo();
       })
-      .catch(error => alert(error.message));
+      .catch(error => this.setState({ error, status: 'rejected' }));
   };
 
   scrollTo = () => {
@@ -82,6 +81,7 @@ export default class ImageGallery extends Component {
 
   render() {
     const {
+      page,
       images,
       showModal,
       largeImageURL,
@@ -94,7 +94,7 @@ export default class ImageGallery extends Component {
     if (status === 'pending') return <Spinner />;
     if (status === 'rejected')
       return <p>Whoops, something went wrong: {error.message}</p>;
-    if (status === 'resolved' && this.state.images.length > 0) {
+    if (status === 'resolved' && images.length > 0) {
       return (
         <>
           <ul className="ImageGallery" onClick={this.selectedImage}>
@@ -107,7 +107,7 @@ export default class ImageGallery extends Component {
               />
             ))}
           </ul>
-          {<Button onClick={this.onClick} />}
+          {<Button page={page} onClick={this.onClick} />}
           {showModal && (
             <Modal onClose={this.toggleModal}>
               <img src={largeImageURL} alt={tags} />
@@ -116,7 +116,7 @@ export default class ImageGallery extends Component {
         </>
       );
     } else {
-      return alert(error.message);
+      return <Example />;
     }
   }
 }

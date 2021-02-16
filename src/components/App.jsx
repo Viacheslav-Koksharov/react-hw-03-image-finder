@@ -7,6 +7,7 @@ import ImageGallery from './ImageGallery/ImageGallery';
 export default class App extends Component {
   state = {
     searchQuery: '',
+    page: 1,
   };
 
   handleFormSubmit = searchQuery => {
@@ -14,10 +15,12 @@ export default class App extends Component {
   };
 
   render() {
+    const { searchQuery, page } = this.state;
+
     return (
       <div>
         <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery searchQuery={this.state.searchQuery} />
+        <ImageGallery searchQuery={searchQuery} page={page} />
         <ToastContainer
           position="top-center"
           autoClose={3000}
