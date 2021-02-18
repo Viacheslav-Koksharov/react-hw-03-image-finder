@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import fetchImg from '../../services/fetch';
 import { toast } from 'react-toastify';
 import Spinner from '../Loader/Loader';
@@ -19,6 +20,7 @@ export default class ImageGallery extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { searchQuery, page } = this.props;
+
     if (prevProps.searchQuery !== searchQuery) {
       this.setState({ status: 'pending' });
 
@@ -36,10 +38,7 @@ export default class ImageGallery extends Component {
               status: 'resolved',
             }));
           })
-          .catch(error => {
-            this.setState({ error: error.message, status: 'rejected' });
-            toast.error(this.state.error);
-          });
+          .catch(this.errorMessage);
       } else {
         this.setState({ status: 'idle' });
       }
@@ -59,12 +58,12 @@ export default class ImageGallery extends Component {
         }));
         this.scrollTo();
       })
-      .catch(error => {
-        this.setState({ error: error.message, status: 'rejected' });
-        toast.error(this.state.error);
-      });
+      .catch(this.errorMessage);
   };
-
+  errorMessage = error => {
+    this.setState({ error: error.message, status: 'rejected' });
+    toast.error(this.state.error);
+  };
   scrollTo = () => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
@@ -94,15 +93,7 @@ export default class ImageGallery extends Component {
   };
 
   render() {
-    const {
-      page,
-      images,
-      showModal,
-      largeImageURL,
-      tags,
-      error,
-      status,
-    } = this.state;
+    const { page, images, showModal, largeImageURL, tags, status } = this.state;
 
     if (status === 'idle' || status === 'rejected') return null;
     if (status === 'pending') return <Spinner />;
@@ -130,3 +121,8 @@ export default class ImageGallery extends Component {
     }
   }
 }
+
+ImageGallery.propTypes = {
+  page: PropTypes.number.isRequired,
+  searchQuery: PropTypes.string.isRequired,
+};

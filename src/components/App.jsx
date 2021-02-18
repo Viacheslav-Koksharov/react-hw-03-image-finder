@@ -22,6 +22,7 @@ export default class App extends Component {
         <Searchbar onSubmit={this.handleFormSubmit} />
         <ImageGallery searchQuery={searchQuery} page={page} />
         <ToastContainer
+          className="Toastify"
           position="top-center"
           autoClose={3000}
           hideProgressBar
