@@ -15,7 +15,6 @@ export default class Searchbar extends Component {
     e.preventDefault();
     if (this.state.searchQuery.trim() === '') {
       toast.error('Try again!');
-      return;
     }
     this.props.onSubmit(this.state.searchQuery);
     this.setState({ searchQuery: '' });

@@ -18,7 +18,7 @@ export default class App extends Component {
     const { searchQuery, page } = this.state;
 
     return (
-      <div>
+      <>
         <Searchbar onSubmit={this.handleFormSubmit} />
         <ImageGallery searchQuery={searchQuery} page={page} />
         <ToastContainer
@@ -26,7 +26,7 @@ export default class App extends Component {
           autoClose={3000}
           hideProgressBar
         />
-      </div>
+      </>
     );
   }
 }

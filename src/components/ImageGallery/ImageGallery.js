@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import fetchImg from '../../services/fetch';
-// import { toast } from 'react-toastify';
-import Example from '../Notify/Notify';
+import { toast } from 'react-toastify';
 import Spinner from '../Loader/Loader';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Modal from '../Modal/Modal';
@@ -23,15 +22,27 @@ export default class ImageGallery extends Component {
     if (prevProps.searchQuery !== searchQuery) {
       this.setState({ status: 'pending' });
 
-      fetchImg(searchQuery, page)
-        .then(images => {
-          this.setState(prevState => ({
-            images: [...images],
-            page: page + 1,
-            status: 'resolved',
-          }));
-        })
-        .catch(error => this.setState({ error, status: 'rejected' }));
+      if (searchQuery.trim() !== '') {
+        fetchImg(searchQuery, page)
+          .then(images => {
+            if (images.length === 0) {
+              this.setState({ status: 'rejected' });
+              toast.error('Идите в жопу с таким запросом');
+              return;
+            }
+            this.setState(prevState => ({
+              images: [...images],
+              page: page + 1,
+              status: 'resolved',
+            }));
+          })
+          .catch(error => {
+            this.setState({ error: error.message, status: 'rejected' });
+            toast.error(this.state.error);
+          });
+      } else {
+        this.setState({ status: 'idle' });
+      }
     }
   }
 
@@ -48,7 +59,10 @@ export default class ImageGallery extends Component {
         }));
         this.scrollTo();
       })
-      .catch(error => this.setState({ error, status: 'rejected' }));
+      .catch(error => {
+        this.setState({ error: error.message, status: 'rejected' });
+        toast.error(this.state.error);
+      });
   };
 
   scrollTo = () => {
@@ -90,10 +104,8 @@ export default class ImageGallery extends Component {
       status,
     } = this.state;
 
-    if (status === 'idle') return null;
+    if (status === 'idle' || status === 'rejected') return null;
     if (status === 'pending') return <Spinner />;
-    if (status === 'rejected')
-      return <p>Whoops, something went wrong: {error.message}</p>;
     if (status === 'resolved' && images.length > 0) {
       return (
         <>
@@ -115,8 +127,6 @@ export default class ImageGallery extends Component {
           )}
         </>
       );
-    } else {
-      return <Example />;
     }
   }
 }
