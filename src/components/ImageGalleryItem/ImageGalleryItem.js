@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import s from '../ContactItem/ContactItem.module.css';
+import s from './ImageGalleryItem.module.css';
 
 const ImageGalleryItem = ({ id, webformatURL, tags }) => {
   return (
-    <li className="ImageGalleryItem">
+    <li className={s.imageGalleryItem}>
       <img
         id={id}
         src={webformatURL}
         alt={tags}
-        className="ImageGalleryItem-image"
+        className={s.imageGalleryItemImage}
       />
     </li>
   );

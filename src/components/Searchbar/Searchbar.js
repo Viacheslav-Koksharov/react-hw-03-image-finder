@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
+import s from './Searchbar.module.css';
 
 export default class Searchbar extends Component {
   state = {
@@ -14,7 +15,7 @@ export default class Searchbar extends Component {
   handleSubmit = e => {
     e.preventDefault();
     if (this.state.searchQuery.trim() === '') {
-      toast.error('Try again!');
+      toast.error('Try again!', { className: `${s.toastify}` });
     }
     this.props.onSubmit(this.state.searchQuery);
     this.setState({ searchQuery: '' });
@@ -22,14 +23,14 @@ export default class Searchbar extends Component {
 
   render() {
     return (
-      <header className="Searchbar">
-        <form onSubmit={this.handleSubmit} className="SearchForm">
-          <button type="submit" className="SearchForm-button">
-            <span className="SearchForm-button-label">Search</span>
+      <header className={s.searchbar}>
+        <form onSubmit={this.handleSubmit} className={s.searchForm}>
+          <button type="submit" className={s.searchFormButton}>
+            <span className={s.searchFormButtonLabel}>Search</span>
           </button>
 
           <input
-            className="SearchForm-input"
+            className={s.searchFormInput}
             type="text"
             name="searchQuery"
             autoComplete="off"

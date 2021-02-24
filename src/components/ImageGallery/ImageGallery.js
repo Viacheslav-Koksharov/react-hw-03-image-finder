@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import s from './ImageGallery.module.css';
 import fetchImg from '../../services/fetch';
 import { toast } from 'react-toastify';
 import Spinner from '../Loader/Loader';
@@ -29,7 +30,9 @@ export default class ImageGallery extends Component {
           .then(images => {
             if (images.length === 0) {
               this.setState({ status: 'rejected' });
-              toast.error('Идите в жопу с таким запросом');
+              toast.error('Идите в жопу с таким запросом', {
+                className: `${s.toastify}`,
+              });
               return;
             }
             this.setState(prevState => ({
@@ -100,7 +103,7 @@ export default class ImageGallery extends Component {
     if (status === 'resolved' && images.length > 0) {
       return (
         <>
-          <ul className="ImageGallery" onClick={this.selectedImage}>
+          <ul className={s.imageGallery} onClick={this.selectedImage}>
             {images.map(({ id, webformatURL, tags }) => (
               <ImageGalleryItem
                 key={id}
